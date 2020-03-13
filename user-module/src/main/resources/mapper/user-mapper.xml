@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.jason.usermodule.dao.UserDao">
+    <resultMap id="userMap" type="com.jason.usermodule.model.UserInfo">
+        <id column="id" property="id" javaType="java.lang.Integer"/>
+        <result column="username" property="username" javaType="java.lang.String"/>
+        <result column="password" property="password" javaType="java.lang.String"/>
+        <result column="nickname" property="nickname" javaType="java.lang.String"/>
+        <result column="email" property="email" javaType="java.lang.String"/>
+        <result column="phone" property="phone" javaType="java.lang.String"/>
+        <result column="user_status" property="userStatus" javaType="java.lang.Integer"/>
+        <result column="avatar" property="avatar" javaType="java.lang.String"/>
+    </resultMap>
+
+    <sql id="first_level">
+        username, nickname, avatar
+    </sql>
+    <sql id="second_level">
+        <include refid="first_level"/>,
+        phone, email,user_status
+    </sql>
+
+    <sql id="third_level">
+        <include refid="first_level"/>,
+        roles
+    </sql>
+
+    <insert id="insert" parameterType="com.jason.usermodule.model.UserInfo" useGeneratedKeys="true" keyColumn="id">
+        insert into table_user(
+        <include refid="first_level"/>,
+        user_status, password
+        <trim>
+            <if test="phone != null">
+                ,phone
+            </if>
+            <if test="email != null">
+                ,email
+            </if>
+        </trim>
+        )values (
+        #{username}, #{nickname}, #{avatar}, #{user_status}, #{password}
+        <trim>
+            <if test="phone != null">
+                ,#{phone}
+            </if>
+            <if test="email != null">
+                , #{email}
+            </if>
+        </trim>
+        )
+    </insert>
+
+    <select id="selectByUsername" resultMap="userMap" parameterType="Map">
+        select id
+        <if test='level == "first_level"'>
+            ,
+            <include refid="first_level"/>
+        </if>
+        <if test='level == "second_level"'>
+            ,
+            <include refid="second_level"/>
+        </if>
+        <if test='level == "third_level"'>
+            ,
+            <include refid="third_level"/>
+        </if>
+        from table_user
+        <trim prefix="where " suffixOverrides=" and ">
+            <if test="id != null">
+                id=#{id} and
+            </if>
+            <if test="username != null">
+                username = #{username} and
+            </if>
+            <if test="password != null">
+                password = #{password} and
+            </if>
+            <if test="status != null">
+                user_status =#{status} and
+            </if>
+            <if test="phone != null">
+                phone =#{phone} and
+            </if>
+            <if test="email != null">
+                email = #{email} and
+            </if>
+        </trim>
+    </select>
+
+</mapper>
