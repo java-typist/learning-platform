@@ -50,7 +50,7 @@
         )
     </insert>
 
-    <select id="selectByUsername" resultMap="userMap" parameterType="Map">
+    <select id="selectUser" resultMap="userMap" parameterType="Map">
         select id
         <if test='level == "first_level"'>
             ,
@@ -82,7 +82,35 @@
                 phone =#{phone} and
             </if>
             <if test="email != null">
-                email = #{email} and
+                email = #{email}
+            </if>
+        </trim>
+    </select>
+
+    <select id="selectUsers" resultMap="userMap" parameterType="Map">
+        select id,
+        <if test='level == "first_level"'>
+            ,
+            <include refid="first_level"/>
+        </if>
+        <if test='level == "second_level"'>
+            ,
+            <include refid="second_level"/>
+        </if>
+        <if test='level == "third_level"'>
+            ,
+            <include refid="third_level"/>
+        </if>
+        from table_user
+        <trim prefix="where " suffixOverrides=" and ">
+            <if test="status != null">
+                user_status =#{status} and
+            </if>
+            <if test="nickname != null">
+                nickname =#{nickname}
+            </if>
+            <if test="limit != null">
+                limit #{start}, #{limit}
             </if>
         </trim>
     </select>

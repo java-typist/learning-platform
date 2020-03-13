@@ -37,8 +37,8 @@ public interface UserDao {
      * @param map
      * @return
      */
-    UserInfo selectByUsername(Map map);
+    UserInfo selectUser(Map map);
 
-    List<UserInfo> selectUser(Map map);
+    List<UserInfo> selectUsers(Map map);
 
 }
